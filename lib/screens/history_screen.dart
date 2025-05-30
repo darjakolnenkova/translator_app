@@ -15,7 +15,12 @@ class HistoryScreen extends StatelessWidget {
 
         final translations = snapshot.data as List<Map<String, String>>;
         if (translations.isEmpty) {
-          return const Center(child: Text("No translation history yet."));
+          return const Center(
+            child: Text(
+              "No translation history yet.",
+              style: TextStyle(fontSize: 18),
+            ),
+          );
         }
 
         return ListView.builder(

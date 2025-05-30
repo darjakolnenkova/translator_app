@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Шаг 4: Импорт Firestore
 import '../services/translation_service.dart';
 import '../services/history_service.dart';
 import '../models/translation_item.dart';
@@ -82,6 +83,15 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
       );
 
       await HistoryService.saveTranslation(newTranslation.original, newTranslation.translated);
+
+      await FirebaseFirestore.instance.collection('translations').add({
+        'original': newTranslation.original,
+        'translated': newTranslation.translated,
+        'fromLang': newTranslation.fromLang,
+        'toLang': newTranslation.toLang,
+        'timestamp': newTranslation.timestamp.toIso8601String(),
+        'isFavorite': newTranslation.isFavorite,
+      });
 
       setState(() {
         _translatedText = translated;

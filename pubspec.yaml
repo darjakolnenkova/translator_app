@@ -45,6 +45,10 @@ flutter:
         - asset: assets/fonts/mediasans-bold-TRIAL-BF63c7546b153ef.otf
         - asset: assets/fonts/mediasans-bold-TRIAL-BF63c7546b153ef.otf
 
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Bold.ttf
+
   assets:
     - assets/backgrounds/waves.svg
     - assets/flags/

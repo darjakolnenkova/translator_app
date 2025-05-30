@@ -50,6 +50,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   'No favorite translations yet.',
                   style: TextStyle(
                     color: isDark ? Colors.white : Colors.black,
+                    fontSize: 18,
                   ),
                   textAlign: TextAlign.center,
                 ),

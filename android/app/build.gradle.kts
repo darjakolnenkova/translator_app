@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")
     id("kotlin-android")
+    id("com.google.gms.google-services")  // правильно подключаем плагин google-services
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -13,7 +13,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true  // <--- вот так в Kotlin DSL
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -36,8 +36,8 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")  // <--- так добавляем зависимость в Kotlin DSL
-    // твои другие зависимости
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    // НЕ ставим classpath здесь!
 }
 
 flutter {
