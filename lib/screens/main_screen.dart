@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'translate_screen.dart';
 import 'favorites_screen.dart';
 import 'history_screen.dart';
+import 'settings_screen.dart';
 import 'welcome_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final Function(bool) onThemeChanged;
+  const MainScreen({Key? key, required this.onThemeChanged}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -13,6 +15,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+
+  bool _isDarkMode = false; // текущая тема
 
   final List<Widget> _screens = const [
     TranslateScreen(),
@@ -26,41 +30,48 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  // Обработчик смены темы
+  void _handleThemeChanged(bool value) {
+    setState(() {
+      _isDarkMode = value;
+    });
+    widget.onThemeChanged(value); // если нужно поднять наверх
+  }
+
   @override
   Widget build(BuildContext context) {
-    const Color appBarBlue = Color(0xFF42A5F5);
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: appBarBlue,
-        foregroundColor: Colors.white,
-        elevation: 4,
-        title: Row(
-          children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-                );
-              },
-              child: const Text(
-                'TRANSLATEme',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
+        title: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => WelcomeScreen(onThemeChanged: widget.onThemeChanged),
               ),
-            ),
-          ],
+            );
+          },
+          child: const Text('TRANSLATEme'),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => SettingsScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeChanged: _handleThemeChanged,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: Colors.white,
-        selectedItemColor: appBarBlue,
-        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.translate), label: 'Translate'),
           BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
@@ -70,3 +81,5 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+

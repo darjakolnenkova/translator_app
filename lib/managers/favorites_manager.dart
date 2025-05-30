@@ -38,6 +38,12 @@ class FavoritesManager {
     await saveFavorites();
   }
 
+  Future<void> clearAllFavorites() async {
+    _favorites.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefsKey);
+  }
+
   bool isFavorite(TranslationItem item) {
     return _favorites.any((e) => e.original == item.original && e.translated == item.translated);
   }

@@ -4,7 +4,9 @@ import '../services/auth_service.dart';
 import 'main_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  final Function(bool) onThemeChanged;
+
+  const WelcomeScreen({Key? key, required this.onThemeChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +75,9 @@ class WelcomeScreen extends StatelessWidget {
                               if (user != null) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (_) => const MainScreen()),
+                                  MaterialPageRoute(
+                                    builder: (_) => MainScreen(onThemeChanged: onThemeChanged),
+                                  ),
                                 );
                               }
                             },
@@ -92,7 +96,9 @@ class WelcomeScreen extends StatelessWidget {
                             onPressed: () {
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (_) => const MainScreen()),
+                                MaterialPageRoute(
+                                  builder: (_) => MainScreen(onThemeChanged: onThemeChanged),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(

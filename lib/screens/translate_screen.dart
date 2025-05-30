@@ -158,6 +158,7 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     final isFocused = _focusNode.hasFocus;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -202,7 +203,7 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
               duration: Duration(milliseconds: 300),
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: isDark ? Colors.grey[700] : Colors.grey[100],
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: isFocused
                     ? [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 15, offset: Offset(0, 8))]
@@ -217,9 +218,14 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
                 decoration: InputDecoration(
                   hintText: "Enter text to translate...",
                   border: InputBorder.none,
-                  hintStyle: TextStyle(color: Color(0xFF4A90E2)),
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.black : Color(0xFF4A90E2),
+                  ),
                 ),
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                ),
                 onSubmitted: (_) => _translate(),
                 cursorColor: Color(0xFF4A90E2),
               ),
@@ -228,7 +234,7 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
             ElevatedButton(
               onPressed: _translate,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFEF5350),
+                backgroundColor: isDark ? Colors.black : Color(0xFFEF5350),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -244,9 +250,15 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
                 width: double.infinity,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: isDark ? Colors.grey[850] : Colors.blue[50],
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [BoxShadow(color: Colors.blue.withOpacity(0.2), blurRadius: 10, offset: Offset(0, 5))],
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark ? Colors.black54 : Colors.blue.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    )
+                  ],
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -254,7 +266,11 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
                     Expanded(
                       child: Text(
                         _translatedText,
-                        style: TextStyle(fontSize: 22, color: Color(0xFF4A90E2), fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: isDark ? Colors.white : Color(0xFF4A90E2),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     IconButton(
