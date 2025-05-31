@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../managers/favorites_manager.dart';
 import '../models/translation_item.dart';
+import 'dart:async';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({Key? key}) : super(key: key);
@@ -11,31 +12,36 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   final FavoritesManager _favoritesManager = FavoritesManager();
+  late StreamSubscription<List<TranslationItem>> _subscription;
+  List<TranslationItem> _favorites = [];
 
   @override
   void initState() {
     super.initState();
-    _loadFavorites();
+    _favoritesManager.loadFavorites();
+    _subscription = _favoritesManager.favoritesStream.listen((updatedFavorites) {
+      setState(() {
+        _favorites = updatedFavorites;
+      });
+    });
   }
 
-  Future<void> _loadFavorites() async {
-    await _favoritesManager.loadFavorites();
-    setState(() {});
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   Future<void> _removeFavorite(TranslationItem item) async {
     await _favoritesManager.removeFavorite(item);
-    setState(() {});
   }
 
   Future<void> _clearAllFavorites() async {
     await _favoritesManager.clearAllFavorites();
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final favorites = _favoritesManager.favorites;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -44,7 +50,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         child: Column(
           children: [
             Expanded(
-              child: favorites.isEmpty
+              child: _favorites.isEmpty
                   ? Center(
                 child: Text(
                   'No favorite translations yet.',
@@ -56,9 +62,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
               )
                   : ListView.builder(
-                itemCount: favorites.length,
+                itemCount: _favorites.length,
                 itemBuilder: (context, index) {
-                  final item = favorites[index];
+                  final item = _favorites[index];
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     elevation: 3,
@@ -94,8 +100,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 },
               ),
             ),
-
-            if (favorites.isNotEmpty)
+            if (_favorites.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Row(

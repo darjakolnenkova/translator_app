@@ -1,13 +1,13 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("com.google.gms.google-services")  // правильно подключаем плагин google-services
+    id("com.google.gms.google-services")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.translator_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = flutter.compileSdkVersion.toInt()
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -22,10 +22,16 @@ android {
 
     defaultConfig {
         applicationId = "com.example.translator_app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
+        minSdk = flutter.minSdkVersion.toInt()
+        targetSdk = flutter.targetSdkVersion.toInt()
+        versionCode = flutter.versionCode.toInt()
         versionName = flutter.versionName
+        multiDexEnabled = true
+
+        // Правильное объявление manifestPlaceholders
+        manifestPlaceholders += mapOf(
+            "appAuthRedirectScheme" to "com.example.translator_app"
+        )
     }
 
     buildTypes {
@@ -37,7 +43,9 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
-    // НЕ ставим classpath здесь!
+    implementation("androidx.multidex:multidex:2.0.1")
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 }
 
 flutter {

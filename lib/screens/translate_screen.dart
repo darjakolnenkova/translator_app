@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Шаг 4: Импорт Firestore
 import '../services/translation_service.dart';
 import '../services/history_service.dart';
 import '../models/translation_item.dart';
@@ -79,22 +78,18 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
         fromLang: _fromLang,
         toLang: _toLang,
         timestamp: DateTime.now(),
-        isFavorite: _isFavorite,
       );
 
-      await HistoryService.saveTranslation(newTranslation.original, newTranslation.translated);
-
-      await FirebaseFirestore.instance.collection('translations').add({
-        'original': newTranslation.original,
-        'translated': newTranslation.translated,
-        'fromLang': newTranslation.fromLang,
-        'toLang': newTranslation.toLang,
-        'timestamp': newTranslation.timestamp.toIso8601String(),
-        'isFavorite': newTranslation.isFavorite,
-      });
+      await HistoryService.saveTranslation(
+        original: newTranslation.original,
+        translated: newTranslation.translated,
+        fromLang: newTranslation.fromLang,
+        toLang: newTranslation.toLang,
+      );
 
       setState(() {
         _translatedText = translated;
+
         _isFavorite = _favoritesManager.isFavorite(newTranslation);
       });
 
@@ -122,24 +117,23 @@ class _TranslateScreenState extends State<TranslateScreen> with TickerProviderSt
   }
 
   void _toggleFavorite() async {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
-
     final item = TranslationItem(
       original: _controller.text.trim(),
       translated: _translatedText,
       fromLang: _fromLang,
       toLang: _toLang,
       timestamp: DateTime.now(),
-      isFavorite: _isFavorite,
     );
 
     if (_isFavorite) {
-      await _favoritesManager.addFavorite(item);
-    } else {
       await _favoritesManager.removeFavorite(item);
+    } else {
+      await _favoritesManager.addFavorite(item);
     }
+
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
   }
 
   Widget _buildLanguageDropdown(String value, ValueChanged<String?> onChanged) {
