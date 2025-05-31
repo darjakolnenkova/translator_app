@@ -1,0 +1,5 @@
+# Исключить из подсчёта Linguist
+android/** linguist-vendored
+ios/** linguist-vendored
+build/** linguist-vendored
+scripts/*.rb linguist-documentation
