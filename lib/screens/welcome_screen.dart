@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../services/auth_service.dart';
 import 'main_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class WelcomeScreen extends StatelessWidget {
   final Function(bool) onThemeChanged;
@@ -67,52 +69,39 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final user = await AuthService().signInWithGoogle();
-                              if (user != null) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => MainScreen(onThemeChanged: onThemeChanged),
-                                  ),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFEF5350),
-                              shape: const StadiumBorder(),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              foregroundColor: Colors.white,
+                    ElevatedButton(
+                      onPressed: () async {
+                        final User? user = await AuthService().signInWithGoogle();
+                        if (user != null) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => MainScreen(
+                                onThemeChanged: onThemeChanged,
+                                user: user, // передаём firebase user
+                              ),
                             ),
-                            child: const Text("Sign in"),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => MainScreen(onThemeChanged: onThemeChanged),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFEF5350),
-                              shape: const StadiumBorder(),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              foregroundColor: Colors.white,
+                          );
+                        }
+                        if (user != null) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => MainScreen(
+                                onThemeChanged: onThemeChanged,
+                                user: user,
+                              ),
                             ),
-                            child: const Text("Get started"),
-                          ),
-                        ),
-                      ],
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFEF5350),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text("Sign in"),
                     ),
                   ],
                 ),

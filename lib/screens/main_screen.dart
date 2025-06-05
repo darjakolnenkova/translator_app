@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'translate_screen.dart';
 import 'favorites_screen.dart';
 import 'history_screen.dart';
@@ -7,7 +9,13 @@ import 'welcome_screen.dart';
 
 class MainScreen extends StatefulWidget {
   final Function(bool) onThemeChanged;
-  const MainScreen({Key? key, required this.onThemeChanged}) : super(key: key);
+  final User user;
+
+  const MainScreen({
+    Key? key,
+    required this.onThemeChanged,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -16,6 +24,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   bool _isDarkMode = false;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   final List<Widget> _screens = [
     const TranslateScreen(),
@@ -38,33 +48,19 @@ class _MainScreenState extends State<MainScreen> {
     widget.onThemeChanged(value);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  Future<void> _signOut() async {
+    try {
+      await _googleSignIn.signOut();
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      print('Ошибка при выходе: $e');
+    }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: GestureDetector(
-          onTap: () => _navigateToWelcomeScreen(),
-          child: const Text(
-            'TRANSLATEme',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => _navigateToSettingsScreen(),
-            tooltip: 'Settings',
-          ),
-        ],
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => WelcomeScreen(onThemeChanged: widget.onThemeChanged),
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(theme),
     );
   }
 
@@ -84,6 +80,76 @@ class _MainScreenState extends State<MainScreen> {
           onThemeChanged: _handleThemeChanged,
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Выход'),
+        content: const Text('Выйти из аккаунта?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _signOut();
+            },
+            child: const Text('Выйти'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: GestureDetector(
+          onTap: _navigateToWelcomeScreen,
+          child: const Text(
+            'TRANSLATEme',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: _navigateToSettingsScreen,
+            tooltip: 'Settings',
+          ),
+          const SizedBox(width: 8),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: GestureDetector(
+              onTap: _showLogoutDialog,
+              child: CircleAvatar(
+                radius: 18,
+                backgroundImage: widget.user.photoURL != null
+                    ? NetworkImage(widget.user.photoURL!)
+                    : null,
+                backgroundColor: Colors.grey[300],
+                child: widget.user.photoURL == null
+                    ? const Icon(Icons.person, color: Colors.white)
+                    : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: _buildBottomNavigationBar(theme),
     );
   }
 
