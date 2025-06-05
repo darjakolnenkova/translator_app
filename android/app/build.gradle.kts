@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.translator_app"
-    compileSdk = flutter.compileSdkVersion.toInt()
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -22,22 +22,33 @@ android {
 
     defaultConfig {
         applicationId = "com.example.translator_app"
-        minSdk = flutter.minSdkVersion.toInt()
-        targetSdk = flutter.targetSdkVersion.toInt()
-        versionCode = flutter.versionCode.toInt()
-        versionName = flutter.versionName
+        minSdk = 21
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
         multiDexEnabled = true
 
-        // Правильное объявление manifestPlaceholders
-        manifestPlaceholders += mapOf(
-            "appAuthRedirectScheme" to "com.example.translator_app"
-        )
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.example.translator_app"
+        manifestPlaceholders["googleRedirectScheme"] = "com.example.translator_app"
     }
 
     buildTypes {
         getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             signingConfig = signingConfigs.getByName("debug")
         }
+        getByName("debug") {
+            isDebuggable = true
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -46,8 +57,4 @@ dependencies {
     implementation("androidx.multidex:multidex:2.0.1")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.android.gms:play-services-auth:20.7.0")
-}
-
-flutter {
-    source = "../.."
 }

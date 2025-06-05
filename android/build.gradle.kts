@@ -1,11 +1,12 @@
 buildscript {
+    val kotlinVersion = "1.9.22"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.0")
-        classpath("com.google.gms:google-services:4.3.15")
+        classpath("com.android.tools.build:gradle:8.2.2")
+        classpath("com.google.gms:google-services:4.4.1")
     }
 }
 
@@ -30,4 +31,8 @@ subprojects {
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(11)
 }
