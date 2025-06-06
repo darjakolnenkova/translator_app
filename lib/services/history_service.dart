@@ -1,12 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HistoryService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static bool _isSaving = false;
   static final Set<String> _pendingTranslations = {};
 
-  // Сохранение перевода в историю
   static Future<void> saveTranslation({
     required String original,
     required String translated,
@@ -106,7 +105,7 @@ class HistoryService {
     }
   }
 
-  // Поток для实时 обновления истории
+  // Поток для обновления истории
   static Stream<List<Map<String, dynamic>>> getHistoryStream() {
     return _firestore
         .collection('translations')
@@ -127,20 +126,17 @@ class HistoryService {
     });
   }
 
-  // Обработка документов Firestore
   static List<Map<String, dynamic>> _processDocuments(
       List<QueryDocumentSnapshot> docs) {
     return docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      final timestamp = data['timestamp'] as Timestamp?;
-
       return {
         'id': doc.id,
         'original': data['original']?.toString().trim() ?? '',
         'translated': data['translated']?.toString().trim() ?? '',
         'fromLang': data['fromLang']?.toString() ?? 'en',
         'toLang': data['toLang']?.toString() ?? 'fr',
-        'timestamp': timestamp?.toDate() ?? DateTime.now(),
+        'timestamp': _parseDateTime(data['timestamp']),
       };
     }).toList();
   }
@@ -152,6 +148,16 @@ class HistoryService {
     } catch (e) {
       debugPrint('❌ Error deleting translation: $e');
       throw Exception('Failed to delete translation: $e');
+    }
+  }
+
+  static DateTime _parseDateTime(dynamic timestamp) {
+    try {
+      return timestamp is Timestamp
+          ? timestamp.toDate()
+          : DateTime.parse(timestamp.toString());
+    } catch (e) {
+      return DateTime.now();
     }
   }
 }

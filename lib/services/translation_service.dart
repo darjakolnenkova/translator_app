@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class TranslationService {
   static Future<String> translate(String text, String from, String to) async {
-    final uri = Uri.parse('http://10.10.0.80:5050/translate');
+    final uri = Uri.parse('http://192.168.31.89:5050/translate');
 
     try {
       final response = await http.post(
