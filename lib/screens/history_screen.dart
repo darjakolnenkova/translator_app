@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../services/history_service.dart';
-import 'dart:async';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -13,7 +11,6 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   late Stream<List<Map<String, dynamic>>> _historyStream;
-  StreamSubscription? _historySubscription;
 
   @override
   void initState() {
@@ -21,18 +18,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     _initializeHistory();
   }
 
-  @override
-  void dispose() {
-    _historySubscription?.cancel();
-    super.dispose();
-  }
-
   void _initializeHistory() {
-    final newStream = HistoryService.getHistoryStream();
-    _historySubscription?.cancel();
-    _historySubscription = newStream.listen((_) {});
     setState(() {
-      _historyStream = newStream;
+      _historyStream = HistoryService.getHistoryStream();
     });
   }
 
@@ -109,11 +97,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Icon(
+            Icons.history,
+            size: 48,
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+          ),
+          const SizedBox(height: 16),
           Text(
-            'No history translations yet.',
+            'No translation history yet',
             style: TextStyle(
               fontSize: 18,
               color: isDarkMode ? Colors.white : Colors.black,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your translations will appear here',
+            style: TextStyle(
+              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
             ),
           ),
         ],
@@ -123,7 +124,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildHistoryList(List<Map<String, dynamic>> translations, bool isDarkMode) {
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       itemCount: translations.length,
       separatorBuilder: (context, index) => Divider(
         height: 1,
@@ -131,7 +132,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
       itemBuilder: (context, index) {
         final item = translations[index];
-        final date = _parseDateTime(item['timestamp']);
+        final date = item['timestamp'] as DateTime;
         return _buildHistoryItem(item, date, isDarkMode);
       },
     );
@@ -141,7 +142,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () {
-        // Действие при тапе
+        // Можно добавить действие при тапе (например, копирование перевода)
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -161,7 +162,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               item['translated'] ?? '',
               style: TextStyle(
                 fontSize: 15,
-                color: isDarkMode ? Colors.white : Colors.black,
+                color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
               ),
             ),
             const SizedBox(height: 12),
@@ -196,15 +197,5 @@ class _HistoryScreenState extends State<HistoryScreen> {
         ),
       ),
     );
-  }
-
-  DateTime _parseDateTime(dynamic timestamp) {
-    try {
-      return timestamp is Timestamp
-          ? timestamp.toDate()
-          : DateTime.parse(timestamp.toString());
-    } catch (e) {
-      return DateTime.now();
-    }
   }
 }

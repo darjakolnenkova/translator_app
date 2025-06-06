@@ -120,13 +120,12 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: _navigateToSettingsScreen,
+          tooltip: 'Settings',
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _navigateToSettingsScreen,
-            tooltip: 'Settings',
-          ),
-          const SizedBox(width: 8),
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: GestureDetector(
