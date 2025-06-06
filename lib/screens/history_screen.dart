@@ -97,30 +97,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.history,
-            size: 48,
-            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-          ),
-          const SizedBox(height: 16),
           Text(
-            'No translation history yet',
+            'No translation history yet.',
             style: TextStyle(
-              fontSize: 18,
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 18,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Your translations will appear here',
-            style: TextStyle(
-              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
+
+
 
   Widget _buildHistoryList(List<Map<String, dynamic>> translations, bool isDarkMode) {
     return ListView.separated(
@@ -141,9 +131,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget _buildHistoryItem(Map<String, dynamic> item, DateTime date, bool isDarkMode) {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
-      onTap: () {
-        // Можно добавить действие при тапе (например, копирование перевода)
-      },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Column(
